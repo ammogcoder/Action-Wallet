@@ -9,6 +9,7 @@ if [ -e ~/.${APPLICATION}/nxt.pid ]; then
         exit 1
     fi
 fi
+DIR=`dirname $0`; cd $DIR
 mkdir -p ~/.${APPLICATION}/
 DIR=`dirname "$0"`
 cd "${DIR}"
@@ -17,6 +18,6 @@ if [ -x jre/bin/java ]; then
 else
     JAVA=java
 fi
-nohup ${JAVA} -cp classes:lib/*:conf:addons/classes:addons/lib/* -Dnxt.runtime.mode=desktop nxt.Nxt > /dev/null 2>&1 &
+nohup ${JAVA} -jar -Dnxt.runtime.mode=desktop action.jar > /dev/null 2>&1 &
 echo $! > ~/.${APPLICATION}/nxt.pid
 cd - > /dev/null

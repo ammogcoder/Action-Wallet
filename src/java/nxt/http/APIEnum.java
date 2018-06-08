@@ -16,12 +16,7 @@
 
 package nxt.http;
 
-import java.util.Base64;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public enum APIEnum {
     //To preserve compatibility, please add new APIs to the end of the enum.
@@ -151,12 +146,6 @@ public enum APIEnum {
     GET_ACCOUNT_EXCHANGE_REQUESTS("getAccountExchangeRequests", GetAccountExchangeRequests.instance),
     GET_EXPECTED_EXCHANGE_REQUESTS("getExpectedExchangeRequests", GetExpectedExchangeRequests.instance),
     GET_MINTING_TARGET("getMintingTarget", GetMintingTarget.instance),
-    GET_ALL_SHUFFLINGS("getAllShufflings", GetAllShufflings.instance),
-    GET_ACCOUNT_SHUFFLINGS("getAccountShufflings", GetAccountShufflings.instance),
-    GET_ASSIGNED_SHUFFLINGS("getAssignedShufflings", GetAssignedShufflings.instance),
-    GET_HOLDING_SHUFFLINGS("getHoldingShufflings", GetHoldingShufflings.instance),
-    GET_SHUFFLING("getShuffling", GetShuffling.instance),
-    GET_SHUFFLING_PARTICIPANTS("getShufflingParticipants", GetShufflingParticipants.instance),
     GET_PRUNABLE_MESSAGE("getPrunableMessage", GetPrunableMessage.instance),
     GET_PRUNABLE_MESSAGES("getPrunableMessages", GetPrunableMessages.instance),
     GET_ALL_PRUNABLE_MESSAGES("getAllPrunableMessages", GetAllPrunableMessages.instance),
@@ -177,14 +166,6 @@ public enum APIEnum {
     SET_ACCOUNT_PROPERTY("setAccountProperty", SetAccountProperty.instance),
     DELETE_ACCOUNT_PROPERTY("deleteAccountProperty", DeleteAccountProperty.instance),
     SET_ALIAS("setAlias", SetAlias.instance),
-    SHUFFLING_CREATE("shufflingCreate", ShufflingCreate.instance),
-    SHUFFLING_REGISTER("shufflingRegister", ShufflingRegister.instance),
-    SHUFFLING_PROCESS("shufflingProcess", ShufflingProcess.instance),
-    SHUFFLING_VERIFY("shufflingVerify", ShufflingVerify.instance),
-    SHUFFLING_CANCEL("shufflingCancel", ShufflingCancel.instance),
-    START_SHUFFLER("startShuffler", StartShuffler.instance),
-    STOP_SHUFFLER("stopShuffler", StopShuffler.instance),
-    GET_SHUFFLERS("getShufflers", GetShufflers.instance),
     DELETE_ALIAS("deleteAlias", DeleteAlias.instance),
     SIGN_TRANSACTION("signTransaction", SignTransaction.instance),
     START_FORGING("startForging", StartForging.instance),

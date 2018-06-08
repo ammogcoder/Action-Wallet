@@ -1,0 +1,1 @@
+start javaw -jar -Dnxt.runtime.mode=desktop action.jar nxt.Nxt

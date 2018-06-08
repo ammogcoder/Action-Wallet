@@ -1,12 +1,15 @@
 #!/bin/sh
+
 VERSION=$1
 if [ -x ${VERSION} ];
 then
 	echo VERSION not defined
 	exit 1
 fi
-APPLICATION="nxt-clone"
+DIR=`dirname $0`; cd $DIR
+APPLICATION="action"
 PACKAGE=${APPLICATION}-client-${VERSION}.zip
+rm -f $PACKAGE
 echo PACKAGE="${PACKAGE}"
 
 FILES="changelogs classes conf html lib src resource addons"

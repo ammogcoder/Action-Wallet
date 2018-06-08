@@ -21,139 +21,12 @@ import nxt.db.DbIterator;
 import nxt.util.Convert;
 import nxt.util.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class Shuffler {
 
-    private static final int MAX_SHUFFLERS = Nxt.getIntProperty("nxt.maxNumberOfShufflers");
     private static final Map<String, Map<Long, Shuffler>> shufflingsMap = new HashMap<>();
     private static final Map<Integer, Set<String>> expirations = new HashMap<>();
-
-    public static Shuffler addOrGetShuffler(String secretPhrase, byte[] recipientPublicKey, byte[] shufflingFullHash) throws ShufflerException {
-        String hash = Convert.toHexString(shufflingFullHash);
-        long accountId = Account.getId(Crypto.getPublicKey(secretPhrase));
-        BlockchainImpl.getInstance().writeLock();
-        try {
-            Map<Long, Shuffler> map = shufflingsMap.get(hash);
-            if (map == null) {
-                map = new HashMap<>();
-                shufflingsMap.put(hash, map);
-            }
-            Shuffler shuffler = map.get(accountId);
-            if (recipientPublicKey == null) {
-                return shuffler;
-            }
-            if (shufflingsMap.size() > MAX_SHUFFLERS) {
-                throw new ShufflerLimitException("Cannot run more than " + MAX_SHUFFLERS + " shufflers on the same node");
-            }
-            if (shuffler == null) {
-                Shuffling shuffling = Shuffling.getShuffling(shufflingFullHash);
-                if (shuffling == null && Account.getAccount(recipientPublicKey) != null) {
-                    throw new InvalidRecipientException("Existing account cannot be used as shuffling recipient");
-                }
-                if (getRecipientShuffler(Account.getId(recipientPublicKey)) != null) {
-                    throw new InvalidRecipientException("Another shuffler with the same recipient account already running");
-                }
-                if (map.size() >= (shuffling == null ? Constants.MAX_NUMBER_OF_SHUFFLING_PARTICIPANTS : shuffling.getParticipantCount())) {
-                    throw new ShufflerLimitException("Cannot run shufflers for more than " + map.size() + " accounts for this shuffling");
-                }
-                Account account = Account.getAccount(accountId);
-                if (account != null && account.getControls().contains(Account.ControlType.PHASING_ONLY)) {
-                    throw new ControlledAccountException("Cannot run a shuffler for an account under phasing only control");
-                }
-                shuffler = new Shuffler(secretPhrase, recipientPublicKey, shufflingFullHash);
-                if (shuffling != null) {
-                    shuffler.init(shuffling);
-                    clearExpiration(shuffling);
-                }
-                map.put(accountId, shuffler);
-                Logger.logMessage(String.format("Started shuffler for account %s, shuffling %s",
-                        Long.toUnsignedString(accountId), Long.toUnsignedString(Convert.fullHashToId(shufflingFullHash))));
-            } else if (!Arrays.equals(shuffler.recipientPublicKey, recipientPublicKey)) {
-                throw new DuplicateShufflerException("A shuffler with different recipientPublicKey already started");
-            } else if (!Arrays.equals(shuffler.shufflingFullHash, shufflingFullHash)) {
-                throw new DuplicateShufflerException("A shuffler with different shufflingFullHash already started");
-            } else {
-                Logger.logMessage("Shuffler already started");
-            }
-            return shuffler;
-        } finally {
-            BlockchainImpl.getInstance().writeUnlock();
-        }
-    }
-
-    public static List<Shuffler> getAllShufflers() {
-        List<Shuffler> shufflers = new ArrayList<>();
-        BlockchainImpl.getInstance().readLock();
-        try {
-            shufflingsMap.values().forEach(shufflerMap -> shufflers.addAll(shufflerMap.values()));
-        } finally {
-            BlockchainImpl.getInstance().readUnlock();
-        }
-        return shufflers;
-    }
-
-    public static List<Shuffler> getShufflingShufflers(byte[] shufflingFullHash) {
-        List<Shuffler> shufflers = new ArrayList<>();
-        BlockchainImpl.getInstance().readLock();
-        try {
-            Map<Long, Shuffler> shufflerMap = shufflingsMap.get(Convert.toHexString(shufflingFullHash));
-            if (shufflerMap != null) {
-                shufflers.addAll(shufflerMap.values());
-            }
-        } finally {
-            BlockchainImpl.getInstance().readUnlock();
-        }
-        return shufflers;
-    }
-
-    public static List<Shuffler> getAccountShufflers(long accountId) {
-        List<Shuffler> shufflers = new ArrayList<>();
-        BlockchainImpl.getInstance().readLock();
-        try {
-            shufflingsMap.values().forEach(shufflerMap -> {
-                Shuffler shuffler = shufflerMap.get(accountId);
-                if (shuffler != null) {
-                    shufflers.add(shuffler);
-                }
-            });
-        } finally {
-            BlockchainImpl.getInstance().readUnlock();
-        }
-        return shufflers;
-    }
-
-    public static Shuffler getShuffler(long accountId, byte[] shufflingFullHash) {
-        BlockchainImpl.getInstance().readLock();
-        try {
-            Map<Long, Shuffler> shufflerMap = shufflingsMap.get(Convert.toHexString(shufflingFullHash));
-            if (shufflerMap != null) {
-                return shufflerMap.get(accountId);
-            }
-        } finally {
-            BlockchainImpl.getInstance().readUnlock();
-        }
-        return null;
-    }
-
-    public static Shuffler stopShuffler(long accountId, byte[] shufflingFullHash) {
-        BlockchainImpl.getInstance().writeLock();
-        try {
-            Map<Long, Shuffler> shufflerMap = shufflingsMap.get(Convert.toHexString(shufflingFullHash));
-            if (shufflerMap != null) {
-                return shufflerMap.remove(accountId);
-            }
-        } finally {
-            BlockchainImpl.getInstance().writeUnlock();
-        }
-        return null;
-    }
 
     public static void stopAllShufflers() {
         BlockchainImpl.getInstance().writeLock();
@@ -161,22 +34,6 @@ public final class Shuffler {
             shufflingsMap.clear();
         } finally {
             BlockchainImpl.getInstance().writeUnlock();
-        }
-    }
-
-    private static Shuffler getRecipientShuffler(long recipientId) {
-        BlockchainImpl.getInstance().readLock();
-        try {
-            for (Map<Long,Shuffler> shufflerMap : shufflingsMap.values()) {
-                for (Shuffler shuffler : shufflerMap.values()) {
-                    if (Account.getId(shuffler.recipientPublicKey) == recipientId) {
-                        return shuffler;
-                    }
-                }
-            }
-            return null;
-        } finally {
-            BlockchainImpl.getInstance().readUnlock();
         }
     }
 
@@ -322,56 +179,6 @@ public final class Shuffler {
 
     public NxtException.NotCurrentlyValidException getFailureCause() {
         return failureCause;
-    }
-
-    private void init(Shuffling shuffling) throws ShufflerException {
-        ShufflingParticipant shufflingParticipant = shuffling.getParticipant(accountId);
-        switch (shuffling.getStage()) {
-            case REGISTRATION:
-                if (Account.getAccount(recipientPublicKey) != null) {
-                    throw new InvalidRecipientException("Existing account cannot be used as shuffling recipient");
-                }
-                if (shufflingParticipant == null) {
-                    submitRegister(shuffling);
-                }
-                break;
-            case PROCESSING:
-                if (shufflingParticipant == null) {
-                    throw new InvalidStageException("Account has not registered for this shuffling");
-                }
-                if (Account.getAccount(recipientPublicKey) != null) {
-                    throw new InvalidRecipientException("Existing account cannot be used as shuffling recipient");
-                }
-                if (accountId == shuffling.getAssigneeAccountId()) {
-                    submitProcess(shuffling);
-                }
-                break;
-            case VERIFICATION:
-                if (shufflingParticipant == null) {
-                    throw new InvalidStageException("Account has not registered for this shuffling");
-                }
-                if (shufflingParticipant.getState() == ShufflingParticipant.State.PROCESSED) {
-                    verify(shuffling);
-                }
-                break;
-            case BLAME:
-                if (shufflingParticipant == null) {
-                    throw new InvalidStageException("Account has not registered for this shuffling");
-                }
-                if (shufflingParticipant.getState() != ShufflingParticipant.State.CANCELLED) {
-                    cancel(shuffling);
-                }
-                break;
-            case DONE:
-            case CANCELLED:
-                scheduleExpiration(shuffling);
-                break;
-            default:
-                throw new RuntimeException("Unsupported shuffling stage " + shuffling.getStage());
-        }
-        if (failureCause != null) {
-            throw new ShufflerException(failureCause.getMessage(), failureCause);
-        }
     }
 
     private void verify(Shuffling shuffling) {

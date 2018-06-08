@@ -1,16 +1,13 @@
-Copyright © 2013-2016 The Nxt Core Developers.
-Copyright © 2016-2017 Jelurida IP B.V.
+Copyright 2013-2016 The Nxt Core Developers.
+Copyright 2016-2017 Jelurida IP B.V.
+Copyright 2017-2018 Action Coin
 
 This program is distributed under the terms of the Jelurida Public License
-version 1.0 for the Nxt Public Blockchain Platform.
+version 1.0 for the Action Coin Public Blockchain Platform.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-Please contact Jelurida B.V. at info@jelurida.com for commercial licensing
-options if the Jelurida Public License does not fit your private blockchain
-needs.
 
 The client UI component of this software, located under /html/www, is
 distributed under the MIT license, a copy of which is available under

@@ -1,7 +1,7 @@
 #!/bin/sh
 CP="lib/*:classes"
 SP=src/java/
-APPLICATION="Action"
+APPLICATION="action"
 
 /bin/rm -f ${APPLICATION}.jar
 /bin/rm -f ${APPLICATION}service.jar
@@ -13,7 +13,7 @@ APPLICATION="Action"
 echo "compiling Action core..."
 find src/java/nxt/ -name "*.java" > sources.tmp
 javac -encoding utf8 -sourcepath "${SP}" -classpath "${CP}" -d classes/ @sources.tmp || exit 1
-echo "Action core class files compiled successfully"
+echo "nxt core class files compiled successfully"
 
 echo "compiling Action desktop..."
 find src/java/nxtdesktop/ -name "*.java" > sources.tmp

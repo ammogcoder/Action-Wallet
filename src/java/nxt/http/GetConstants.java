@@ -151,18 +151,6 @@ public final class GetConstants extends APIServlet.APIRequestHandler {
                 }
                 response.put("holdingTypes", holdingTypes);
 
-                JSONObject shufflingStages = new JSONObject();
-                for (Shuffling.Stage stage : Shuffling.Stage.values()) {
-                    shufflingStages.put(stage.toString(), stage.getCode());
-                }
-                response.put("shufflingStages", shufflingStages);
-
-                JSONObject shufflingParticipantStates = new JSONObject();
-                for (ShufflingParticipant.State state : ShufflingParticipant.State.values()) {
-                    shufflingParticipantStates.put(state.toString(), state.getCode());
-                }
-                response.put("shufflingParticipantStates", shufflingParticipantStates);
-
                 JSONObject apiTags = new JSONObject();
                 for (APITag apiTag : APITag.values()) {
                     JSONObject tagJSON = new JSONObject();

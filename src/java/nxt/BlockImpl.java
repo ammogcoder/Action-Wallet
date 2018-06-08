@@ -279,7 +279,11 @@ final class BlockImpl implements Block {
             byte[] previousBlockHash = version == 1 ? null : Convert.parseHexString((String) blockData.get("previousBlockHash"));
             List<TransactionImpl> blockTransactions = new ArrayList<>();
             for (Object transactionData : (JSONArray) blockData.get("transactions")) {
-                blockTransactions.add(TransactionImpl.parseTransaction((JSONObject) transactionData));
+                try {
+                    blockTransactions.add(TransactionImpl.parseTransaction((JSONObject) transactionData));
+                } catch (NxtException.NotValidException e) {
+                    Logger.logWarningMessage("Not valid transaction: ", e);
+                }
             }
             BlockImpl block = new BlockImpl(version, timestamp, previousBlock, totalAmountNQT, totalFeeNQT, payloadLength, payloadHash, generatorPublicKey,
                     generationSignature, blockSignature, previousBlockHash, blockTransactions);

@@ -16,27 +16,7 @@
 
 package nxt.http;
 
-import nxt.Account;
-import nxt.AccountRestrictions;
-import nxt.Alias;
-import nxt.Asset;
-import nxt.AssetTransfer;
-import nxt.Constants;
-import nxt.Currency;
-import nxt.CurrencyBuyOffer;
-import nxt.CurrencyTransfer;
-import nxt.DigitalGoodsStore;
-import nxt.Exchange;
-import nxt.ExchangeRequest;
-import nxt.Generator;
-import nxt.Nxt;
-import nxt.Order;
-import nxt.Poll;
-import nxt.PrunableMessage;
-import nxt.Shuffling;
-import nxt.TaggedData;
-import nxt.Trade;
-import nxt.Vote;
+import nxt.*;
 import nxt.peer.Peers;
 import nxt.util.UPnP;
 import org.json.simple.JSONObject;
@@ -85,8 +65,6 @@ public final class GetState extends APIServlet.APIRequestHandler {
             response.put("numberOfDataTags", TaggedData.Tag.getTagCount());
             response.put("numberOfAccountLeases", Account.getAccountLeaseCount());
             response.put("numberOfActiveAccountLeases", Account.getActiveLeaseCount());
-            response.put("numberOfShufflings", Shuffling.getCount());
-            response.put("numberOfActiveShufflings", Shuffling.getActiveCount());
             response.put("numberOfPhasingOnlyAccounts", AccountRestrictions.PhasingOnly.getCount());
         }
         response.put("numberOfPeers", Peers.getAllPeers().size());

@@ -223,7 +223,6 @@ public enum CurrencyType {
         void validateMissing(Currency currency, Transaction transaction, Set<CurrencyType> validators) throws NxtException.ValidationException {
         }
     };
-
     private final int code;
 
     CurrencyType(int code) {

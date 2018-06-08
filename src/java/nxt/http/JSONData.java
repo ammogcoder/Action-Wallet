@@ -16,46 +16,8 @@
 
 package nxt.http;
 
-import nxt.Account;
-import nxt.AccountLedger;
+import nxt.*;
 import nxt.AccountLedger.LedgerEntry;
-import nxt.AccountRestrictions;
-import nxt.Alias;
-import nxt.Appendix;
-import nxt.Asset;
-import nxt.AssetDelete;
-import nxt.AssetDividend;
-import nxt.AssetTransfer;
-import nxt.Attachment;
-import nxt.Block;
-import nxt.Constants;
-import nxt.Currency;
-import nxt.CurrencyExchangeOffer;
-import nxt.CurrencyFounder;
-import nxt.CurrencyTransfer;
-import nxt.CurrencyType;
-import nxt.DigitalGoodsStore;
-import nxt.Exchange;
-import nxt.ExchangeRequest;
-import nxt.FundingMonitor;
-import nxt.Generator;
-import nxt.HoldingType;
-import nxt.MonetarySystem;
-import nxt.Nxt;
-import nxt.Order;
-import nxt.PhasingPoll;
-import nxt.PhasingVote;
-import nxt.Poll;
-import nxt.PrunableMessage;
-import nxt.Shuffler;
-import nxt.Shuffling;
-import nxt.ShufflingParticipant;
-import nxt.TaggedData;
-import nxt.Token;
-import nxt.Trade;
-import nxt.Transaction;
-import nxt.Vote;
-import nxt.VoteWeighting;
 import nxt.crypto.Crypto;
 import nxt.crypto.EncryptedData;
 import nxt.db.DbIterator;
@@ -339,69 +301,6 @@ public final class JSONData {
         json.put("rateNQT", String.valueOf(availableOffers.getRateNQT()));
         json.put("units", String.valueOf(availableOffers.getUnits()));
         json.put("amountNQT", String.valueOf(availableOffers.getAmountNQT()));
-        return json;
-    }
-
-    static JSONObject shuffling(Shuffling shuffling, boolean includeHoldingInfo) {
-        JSONObject json = new JSONObject();
-        json.put("shuffling", Long.toUnsignedString(shuffling.getId()));
-        putAccount(json, "issuer", shuffling.getIssuerId());
-        json.put("holding", Long.toUnsignedString(shuffling.getHoldingId()));
-        json.put("holdingType", shuffling.getHoldingType().getCode());
-        if (shuffling.getAssigneeAccountId() != 0) {
-            putAccount(json, "assignee", shuffling.getAssigneeAccountId());
-        }
-        json.put("amount", String.valueOf(shuffling.getAmount()));
-        json.put("blocksRemaining", shuffling.getBlocksRemaining());
-        json.put("participantCount", shuffling.getParticipantCount());
-        json.put("registrantCount", shuffling.getRegistrantCount());
-        json.put("stage", shuffling.getStage().getCode());
-        json.put("shufflingStateHash", Convert.toHexString(shuffling.getStateHash()));
-        json.put("shufflingFullHash", Convert.toHexString(shuffling.getFullHash()));
-        JSONArray recipientPublicKeys = new JSONArray();
-        for (byte[] recipientPublicKey : shuffling.getRecipientPublicKeys()) {
-            recipientPublicKeys.add(Convert.toHexString(recipientPublicKey));
-        }
-        if (recipientPublicKeys.size() > 0) {
-            json.put("recipientPublicKeys", recipientPublicKeys);
-        }
-        if (includeHoldingInfo && shuffling.getHoldingType() != HoldingType.NXT) {
-            JSONObject holdingJson = new JSONObject();
-            if (shuffling.getHoldingType() == HoldingType.ASSET) {
-                putAssetInfo(holdingJson, shuffling.getHoldingId());
-            } else if (shuffling.getHoldingType() == HoldingType.CURRENCY) {
-                putCurrencyInfo(holdingJson, shuffling.getHoldingId());
-            }
-            json.put("holdingInfo", holdingJson);
-        }
-        return json;
-    }
-
-    static JSONObject participant(ShufflingParticipant participant) {
-        JSONObject json = new JSONObject();
-        json.put("shuffling", Long.toUnsignedString(participant.getShufflingId()));
-        putAccount(json, "account", participant.getAccountId());
-        putAccount(json, "nextAccount", participant.getNextAccountId());
-        json.put("state", participant.getState().getCode());
-        return json;
-    }
-
-    static JSONObject shuffler(Shuffler shuffler, boolean includeParticipantState) {
-        JSONObject json = new JSONObject();
-        putAccount(json, "account", shuffler.getAccountId());
-        putAccount(json, "recipient", Account.getId(shuffler.getRecipientPublicKey()));
-        json.put("shufflingFullHash", Convert.toHexString(shuffler.getShufflingFullHash()));
-        json.put("shuffling", Long.toUnsignedString(Convert.fullHashToId(shuffler.getShufflingFullHash())));
-        if (shuffler.getFailedTransaction() != null) {
-            json.put("failedTransaction", unconfirmedTransaction(shuffler.getFailedTransaction()));
-            json.put("failureCause", shuffler.getFailureCause().getMessage());
-        }
-        if (includeParticipantState) {
-            ShufflingParticipant participant = ShufflingParticipant.getParticipant(Convert.fullHashToId(shuffler.getShufflingFullHash()), shuffler.getAccountId());
-            if (participant != null) {
-                json.put("participantState", participant.getState().getCode());
-            }
-        }
         return json;
     }
 

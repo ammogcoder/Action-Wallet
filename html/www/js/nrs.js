@@ -1332,8 +1332,7 @@ var NRS = (function(NRS, $, undefined) {
                                 "public_key": NRS.escapeRespStr(NRS.publicKey)
                             }) +
                             NRS.getPassphraseValidationLink() +
-							"<br/><br/>" + NRS.blockchainDownloadingMessage() +
-                            "<br/><br/>" + NRS.getFundAccountLink()).show();
+							"<br/><br/>" + NRS.blockchainDownloadingMessage()).show();
                     } else {
                         $("#dashboard_message").addClass("alert-success").removeClass("alert-danger").html(NRS.blockchainDownloadingMessage()).show();
                     }
@@ -1358,7 +1357,6 @@ var NRS = (function(NRS, $, undefined) {
                         if (NRS.downloadingBlockchain) {
                             message += "<br/><br/>" + NRS.blockchainDownloadingMessage();
                         }
-                        message += "<br/><br/>" + NRS.getFundAccountLink();
                     }
                     $("#dashboard_message").addClass("alert-success").removeClass("alert-danger").html(message).show();
                 }

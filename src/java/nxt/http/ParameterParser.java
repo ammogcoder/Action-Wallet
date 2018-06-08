@@ -16,22 +16,7 @@
 
 package nxt.http;
 
-import nxt.Account;
-import nxt.Alias;
-import nxt.Appendix;
-import nxt.Asset;
-import nxt.Attachment;
-import nxt.Constants;
-import nxt.Currency;
-import nxt.CurrencyBuyOffer;
-import nxt.CurrencySellOffer;
-import nxt.DigitalGoodsStore;
-import nxt.HoldingType;
-import nxt.Nxt;
-import nxt.NxtException;
-import nxt.Poll;
-import nxt.Shuffling;
-import nxt.Transaction;
+import nxt.*;
 import nxt.crypto.Crypto;
 import nxt.crypto.EncryptedData;
 import nxt.util.Convert;
@@ -291,14 +276,6 @@ public final class ParameterParser {
             throw new ParameterException(UNKNOWN_OFFER);
         }
         return offer;
-    }
-
-    public static Shuffling getShuffling(HttpServletRequest req) throws ParameterException {
-        Shuffling shuffling = Shuffling.getShuffling(getUnsignedLong(req, "shuffling", true));
-        if (shuffling == null) {
-            throw new ParameterException(UNKNOWN_SHUFFLING);
-        }
-        return shuffling;
     }
 
     public static long getQuantityQNT(HttpServletRequest req) throws ParameterException {
